@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dompetku/models/dompet.dart';
-import 'package:dompetku/providers/dompet_provider.dart';
+import '../models/dompet.dart';
+import '../providers/dompet_provider.dart';
 
 class AddDompetPage extends ConsumerStatefulWidget {
   const AddDompetPage({super.key});
@@ -13,7 +13,7 @@ class AddDompetPage extends ConsumerStatefulWidget {
 class _AddDompetPageState extends ConsumerState<AddDompetPage> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
-  
+
   String selectedCategory = 'Makan';
   TransactionType _selectedType = TransactionType.expense;
 
@@ -55,7 +55,8 @@ class _AddDompetPageState extends ConsumerState<AddDompetPage> {
     if (amount == null || amount <= 0) return;
 
     final now = DateTime.now();
-    final timeStr = '${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')}';
+    final timeStr =
+        '${now.hour.toString().padLeft(2, '0')}.${now.minute.toString().padLeft(2, '0')}';
 
     final newTransaction = TransactionModel(
       title: titleText,
@@ -90,146 +91,150 @@ class _AddDompetPageState extends ConsumerState<AddDompetPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Pilihan Tipe Transaksi (Pemasukan / Pengeluaran)
-            Row(
-              children: [
-                Expanded(
-                  child: ChoiceChip(
-                    label: const Center(child: Text('Pengeluaran')),
-                    selected: _selectedType == TransactionType.expense,
-                    selectedColor: Colors.red.shade100,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() {
-                          _selectedType = TransactionType.expense;
-                        });
-                      }
-                    },
+      // MEMBUNGKUS BODY DENGAN SingleChildScrollView & SafeArea
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Pilihan Tipe Transaksi (Pemasukan / Pengeluaran)
+              Row(
+                children: [
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Center(child: Text('Pengeluaran')),
+                      selected: _selectedType == TransactionType.expense,
+                      selectedColor: Colors.red.shade100,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _selectedType = TransactionType.expense;
+                          });
+                        }
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ChoiceChip(
-                    label: const Center(child: Text('Pemasukan')),
-                    selected: _selectedType == TransactionType.income,
-                    selectedColor: Colors.green.shade100,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() {
-                          _selectedType = TransactionType.income;
-                        });
-                      }
-                    },
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Center(child: Text('Pemasukan')),
+                      selected: _selectedType == TransactionType.income,
+                      selectedColor: Colors.green.shade100,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _selectedType = TransactionType.income;
+                          });
+                        }
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
+                ],
+              ),
+              const SizedBox(height: 20),
 
-            const Text(
-              'Nominal',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                const Text(
-                  'Rp ',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _amountController,
-                    keyboardType: TextInputType.number,
-                    style: const TextStyle(
-                      fontSize: 28,
+              const Text(
+                'Nominal',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  const Text(
+                    'Rp ',
+                    style: TextStyle(
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
-                    decoration: const InputDecoration(
-                      hintText: '0',
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _amountController,
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: '0',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(thickness: 1.5),
+
+              const SizedBox(height: 24),
+
+              const Text(
+                'Kategori',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _buildCategoryChip('Makan', Icons.restaurant),
+                  _buildCategoryChip('Transport', Icons.two_wheeler),
+                  _buildCategoryChip('Kuliah', Icons.school),
+                  _buildCategoryChip('Lainnya', Icons.more_horiz),
+                ],
+              ),
+
+              const SizedBox(height: 24),
+
+              Container(
+                height: 120,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: _titleController,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    hintText: 'Catatan / Keterangan',
+                    hintStyle: TextStyle(color: Colors.grey),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+
+              // GANTI const Spacer() DENGAN SizedBox UNTUK JARAk AMAN
+              const SizedBox(height: 32),
+
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  onPressed: _saveTransaction,
+                  child: const Text(
+                    'Simpan',
+                    style: TextStyle(
+                      color: Color(0xFF3F4EAD),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              ],
-            ),
-            const Divider(thickness: 1.5),
-
-            const SizedBox(height: 24),
-
-            const Text(
-              'Kategori',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
               ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                _buildCategoryChip('Makan', Icons.restaurant),
-                _buildCategoryChip('Transport', Icons.two_wheeler),
-                _buildCategoryChip('Kuliah', Icons.school),
-                _buildCategoryChip('Lainnya', Icons.more_horiz),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            Container(
-              height: 120,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: _titleController,
-                maxLines: null,
-                decoration: const InputDecoration(
-                  hintText: 'Catatan / Keterangan',
-                  hintStyle: TextStyle(color: Colors.grey),
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-
-            const Spacer(),
-
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.grey.shade300),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                onPressed: _saveTransaction,
-                child: const Text(
-                  'Simpan',
-                  style: TextStyle(
-                    color: Color(0xFF3F4EAD),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
